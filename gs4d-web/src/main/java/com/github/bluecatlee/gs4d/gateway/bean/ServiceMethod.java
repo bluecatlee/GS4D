@@ -1,4 +1,4 @@
-package com.github.bluecatlee.gs4d.common.bean;
+package com.github.bluecatlee.gs4d.gateway.bean;
 
 import java.io.Serializable;
 

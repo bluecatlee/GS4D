@@ -44,6 +44,11 @@ public class ExceptionUtil {
         return msg;
     }
 
+    /**
+     * 将异常信息包装到MessagePack中
+     * @param ex
+     * @param messagePack
+     */
     public static void processException(Exception ex, MessagePack messagePack) {
         if (ex == null) {
             throw new RuntimeException("未传入异常");
@@ -86,6 +91,10 @@ public class ExceptionUtil {
         }
     }
 
+    /**
+     * 重新抛出MessagePack中的异常
+     * @param messagePack
+     */
     public static void checkDubboException(MessagePack messagePack) {
         if (messagePack == null) {
             throw new RuntimeException("未传入异常");

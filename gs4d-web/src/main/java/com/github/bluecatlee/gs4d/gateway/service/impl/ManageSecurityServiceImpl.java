@@ -8,7 +8,7 @@ import com.github.bluecatlee.gs4d.common.utils.DigestsUtil;
 import com.github.bluecatlee.gs4d.common.utils.Encodes;
 import com.github.bluecatlee.gs4d.common.utils.ExceptionUtil;
 import com.github.bluecatlee.gs4d.common.utils.JsonMapper;
-import com.github.bluecatlee.gs4d.gateway.bean.UserIdAndSalt;
+import com.github.bluecatlee.gs4d.gateway.bean.*;
 import com.github.bluecatlee.gs4d.gateway.constant.Constant;
 import com.github.bluecatlee.gs4d.gateway.model.ServiceRequest;
 import com.github.bluecatlee.gs4d.gateway.service.ManageSecurityService;
@@ -25,9 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service("manageSecurityService")
@@ -38,9 +36,9 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
     // 缓存appKey与appSecret的映射关系
     private static final Map<String, AppSecret> appSecretMap = new ConcurrentHashMap<>();
     // 缓存cmd/method与serviceMethod的映射关系
-    private static final Map<String, ServiceMethod> serviceMethodMap=new ConcurrentHashMap<>();
+    private static final Map<String, ServiceMethod> serviceMethodMap = new ConcurrentHashMap<>();
     // 缓存beanId:method与实际class类的映射关系
-    private static final Map<String, MethodAndRequestClass> methodAndRequestTypeMap=new ConcurrentHashMap<>();
+    private static final Map<String, MethodAndRequestClass> methodAndRequestTypeMap = new ConcurrentHashMap<>();
 
     private static final JsonMapper mapper = JsonMapper.nonDefaultMapper();
     private static final JsonMapper camelMapper = JsonMapper.nonDefaultMapper();
@@ -53,7 +51,12 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
     private ApplicationContext ctx;
 
     @Override
-    public ServiceRequest getServiceRequestForLogin(String cmd, String method, String appKey, String params){
+    public ServiceRequest getServiceRequest(String cmd, String method, String appKey, String params) {
+        return getServiceRequest(cmd, method, appKey, params, true);
+    }
+
+    @Override
+    public ServiceRequest getServiceRequest(String cmd, String method, String appKey, String params, boolean decodeParams) {
         log.info("cmd:{}, method:{}, appKey:{}, params:{}", cmd, method, appKey, params);
         if (StringUtils.isEmpty(cmd) && StringUtils.isEmpty(method)) {
             throw new ValidateClientException(Constant.SUB_SYSTEM, ExceptionType.VCE10000, "未传入cmd或method");
@@ -65,17 +68,21 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
             throw new ValidateClientException(Constant.SUB_SYSTEM, ExceptionType.VCE10000, "未传入params");
         }
         AppSecret appSecret = getAppSecretByAppKey(appKey);
-        //BASE64解码
-        String plainParams;
-        try {
-            plainParams = new String(new Base64().decode(params.getBytes()), "UTF-8");
-        } catch (UnsupportedEncodingException e){
-            log.error("参数base64解码失败,params:{}", params);
-            log.error(e.getMessage(), e);
-            throw new ValidateClientException(Constant.SUB_SYSTEM, ExceptionType.VCE10000, "参数base64解码失败");
-        }
-        if (log.isDebugEnabled()){
-            log.debug("param Base64解码后:" + plainParams);
+
+        if (decodeParams) {
+            //BASE64解码
+            String plainParams;
+            try {
+                plainParams = new String(new Base64().decode(params.getBytes()), "UTF-8");
+            } catch (UnsupportedEncodingException e){
+                log.error("参数base64解码失败,params:{}", params);
+                log.error(e.getMessage(), e);
+                throw new ValidateClientException(Constant.SUB_SYSTEM, ExceptionType.VCE10000, "参数base64解码失败");
+            }
+            if (log.isDebugEnabled()){
+                log.debug("param Base64解码后:" + plainParams);
+            }
+            params = plainParams;
         }
 
         ServiceMethod serviceMethod = getServiceMethodByCmdOrMethod(appSecret.getDataSign(), cmd, method);
@@ -83,7 +90,7 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
         ServiceRequest sr = new ServiceRequest();
         sr.setTenantNumId(appSecret.getTenantNumId());
         sr.setDataSign(appSecret.getDataSign());
-        sr.setPlainParams(plainParams);
+        sr.setPlainParams(params);
         sr.setServiceName(serviceMethod.getServiceName());
         sr.setMethodName(serviceMethod.getServiceMethod());
         sr.setAttach(null);
@@ -160,7 +167,7 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
     }
 
     @Override
-    public UserIdAndSalt getUserIdAndSaltBySid(String sid){
+    public UserIdAndSalt getUserIdAndSaltBySid(String sid) {
         // todo 待实现
         return null;
 //        UserNumIdAndSaltGetBySidRequest request10=new UserNumIdAndSaltGetBySidRequest();
@@ -288,7 +295,7 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
             if (ie instanceof InvocationTargetException) {
                 Exception exception = (Exception)((InvocationTargetException) ie).getTargetException();
                 ExceptionUtil.processException(exception, messagePack);
-            }else {
+            } else {
                 ExceptionUtil.processException(ie, messagePack);
             }
         } catch (Exception ex) {
@@ -297,23 +304,135 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
         return messagePack;
     }
 
+    @Override
+    public MessagePack callMethodForNormal(ServiceRequest serviceRequest) {
+        return callMethodForNormal(serviceRequest,false);
+    }
+
+    @Override
+    public MessagePack callMethodForNormal(ServiceRequest serviceRequest, boolean isCamelParam) {
+        MessagePack messagePack = new MessagePack();
+        try {
+            Long tenantNumId = serviceRequest.getTenantNumId();
+            Long dataSign = serviceRequest.getDataSign();
+            Object o = ctx.getBean(serviceRequest.getServiceName());
+            if (o == null) {
+                throw new ValidateClientException(Constant.SUB_SYSTEM, ExceptionType.VCE10000, "未定义的服务:" + serviceRequest.getServiceName());
+            }
+            String methodAndRequestTypeKey = serviceRequest.getServiceName() + "_" + serviceRequest.getMethodName();
+            MethodAndRequestClass mp = methodAndRequestTypeMap.get(methodAndRequestTypeKey);
+            if (mp == null) {
+                mp = getMethodAndRequestClass(o.getClass(), serviceRequest.getMethodName());
+                if (mp == null) {
+                    throw new ValidateClientException(Constant.SUB_SYSTEM, ExceptionType.VCE10000, "未定义的方法:" + serviceRequest.getServiceName() + ":" + serviceRequest.getMethodName());
+                }
+                methodAndRequestTypeMap.put(methodAndRequestTypeKey, mp);
+            }
+            Method m = mp.getMethod();
+            Class<? extends AbstractRequest> requestType = mp.getRequestClass();
+            AbstractRequest myrequest;
+            if (isCamelParam) {
+                myrequest = camelMapper.fromJson(serviceRequest.getPlainParams(), requestType);
+            } else {
+                myrequest = mapper.fromJson(serviceRequest.getPlainParams(), requestType);
+            }
+            myrequest.setTenantNumId(tenantNumId);
+            myrequest.setDataSign(dataSign);
+            //myrequest.validate(Constant.SUB_SYSTEM, ExceptionType.VCE10000);
+            messagePack = (MessagePack)m.invoke(o, myrequest);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ie) {
+            ExceptionUtil.processException(ie, messagePack);
+        } catch (Exception ex) {
+            ExceptionUtil.processException(ex, messagePack);
+        }
+        return messagePack;
+    }
+
+    @Override
+    public boolean isAuthorizeIp(HttpServletRequest request) {
+        String ipAddress = getIpAddr(request,false);
+        if (log.isDebugEnabled()){
+            log.debug("check isAuthorizeIp,ip:{}", ipAddress);
+        }
+        if (ipAddress.startsWith("192.168.") || ipAddress.equals("0:0:0:0:0:0:0:1") || ipAddress.equals("127.0.0.1"))  {
+            return true;
+        }
+        if (log.isDebugEnabled()){
+            log.debug("check isAuthorizeIp false");
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isAuthorizeIp(HttpServletRequest request, List<String> whiteIpList) {
+        // todo 此处直接放行了
+        return true;
+    }
+
+    @Override
+    public List<ExArcSystem> getExArcSystemList() {
+        // todo 获取系统名称列表
+        return new ArrayList<>(0);
+//        ExArcSystemResponse response = baseInfoCommonService.sysNumIdAndSysName();
+//        ExceptionUtil.checkDubboException(response);
+//        return response.getExArcSystemList();
+    }
+
+    @Override
+    public CommonCallTableInfoByCmd getCommonCallTableInfoByCmd(String cmd) {
+        return null;
+//        CommonCallTableInfoByCmdRequest request = new CommonCallTableInfoByCmdRequest();
+//        request.setCmd(cmd);
+//        request.setTenantNumId(0L);
+//        request.setDataSign(1L);
+//        CommonCallTableInfoByCmdResponse response = this.baseInfoCommonService.commonCallTableInfoByCmd(request);
+//        ExceptionUtil.checkDubboException(response);
+//        return response.getCommonCallTableInfoByCmd();
+    }
+
+    @Override
+    public List<CommonCallTableInfoBySysNumId> getcommonCallTableInfosBySysNumId(Integer sysNumId){
+        // todo
+        return new ArrayList<>(0);
+//        CommonCallTableInfoBySysNumIdRequest request = new CommonCallTableInfoBySysNumIdRequest();
+//        request.setSysNumId(sysNumId);
+//        request.setTenantNumId(0L);//此参数无用
+//        request.setDataSign(1L);//此参数无用
+//        CommonCallTableInfoBySysNumIdResponse response = baseInfoCommonService.commonCallTableInfoBySysNumId(request);
+//        ExceptionUtil.checkDubboException(response);
+//        List<CommonCallTableInfoBySysNumId> list = response.getCommonCallTableInfoBySysNumId();
+//        for (CommonCallTableInfoBySysNumId cc : list) {
+//            cc.setFuncname(cc.getCmd() + "_" + cc.getFuncname() + "_" + cc.getRemark());
+//        }
+//        return list;
+    }
+
+    @Override
+    public CommonCallTableInfoByFuncname getCommonCallTableInfoByFuncname(String funcname) {
+        return null;
+    }
+
+    @Override
+    public void clearAppSecretMap() {
+        appSecretMap.clear();
+    }
+
     /**
      * 根据appKey获取appSecret
      * @param appKey
      * @return
      */
-    private AppSecret getAppSecretByAppKey(String appKey){
+    private AppSecret getAppSecretByAppKey(String appKey) {
         AppSecret appSecret = appSecretMap.get(appKey);
-        if(appSecret == null){
+        if (appSecret == null) {
             appSecret = doGetAppSecretByAppKey(appKey);
             appSecretMap.put(appKey, appSecret);
         }
-        // todo 判断是否已经失效
         return appSecret;
     }
 
     //按appKey获取秘钥
-    private AppSecret doGetAppSecretByAppKey(String appKey){
+    private AppSecret doGetAppSecretByAppKey(String appKey) {
         // todo 待实现
         return null;
 //        AppSecretGetRequest request = new AppSecretGetRequest();
@@ -333,22 +452,22 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
      * @param method
      * @return
      */
-    private ServiceMethod getServiceMethodByCmdOrMethod(Long dataSign, String cmd, String method){
+    private ServiceMethod getServiceMethodByCmdOrMethod(Long dataSign, String cmd, String method) {
         String serviceMethodKey = null;
-        if(StringUtils.isEmpty(cmd)){
+        if (StringUtils.isEmpty(cmd)) {
             serviceMethodKey = "method_" + method + "_" + dataSign;
-        }else{
+        } else {
             serviceMethodKey = "cmd_" + cmd + "_" + dataSign;
         }
         ServiceMethod serviceMethod = serviceMethodMap.get(serviceMethodKey);
-        if(serviceMethod == null){
+        if (serviceMethod == null) {
             serviceMethod = doGetServiceMethodByCmdOrMethod(dataSign, cmd, method);
             serviceMethodMap.put(serviceMethodKey, serviceMethod);
         }
         return serviceMethod;
     }
 
-    private ServiceMethod doGetServiceMethodByCmdOrMethod(Long dataSign, String cmd, String method){
+    private ServiceMethod doGetServiceMethodByCmdOrMethod(Long dataSign, String cmd, String method) {
         // todo 待实现
         return null;
 //        if (!StringUtils.isEmpty(method)) {
@@ -376,7 +495,7 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
      * @param secret
      * @return
      */
-    private static String sha1Signature(TreeMap<String, String> params, String secret){
+    private static String sha1Signature(TreeMap<String, String> params, String secret) {
         String result = null;
         StringBuffer origin = assembleParams(params, new StringBuffer(secret));
         if (origin == null) {
@@ -415,7 +534,7 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
      * @param convertToExternalIp
      * @return
      */
-    private String getIpAddr(HttpServletRequest request, boolean convertToExternalIp){
+    private String getIpAddr(HttpServletRequest request, boolean convertToExternalIp) {
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");

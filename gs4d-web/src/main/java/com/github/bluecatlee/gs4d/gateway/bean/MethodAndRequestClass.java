@@ -1,4 +1,6 @@
-package com.github.bluecatlee.gs4d.common.bean;
+package com.github.bluecatlee.gs4d.gateway.bean;
+
+import com.github.bluecatlee.gs4d.common.bean.AbstractRequest;
 
 import java.lang.reflect.Method;
 
