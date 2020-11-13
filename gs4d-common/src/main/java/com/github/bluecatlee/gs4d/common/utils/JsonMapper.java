@@ -28,7 +28,7 @@ public class JsonMapper {
         if (include != null) {
             this.mapper.setSerializationInclusion(include);
         }
-
+        // 禁用 反序列化遇到未知字段抛异常的特性
         this.mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
@@ -155,5 +155,19 @@ public class JsonMapper {
             }
         }
     }
+
+    public static void main(String[] args) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String s = objectMapper.writeValueAsString(false);
+            System.out.println(s);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
 }
 
