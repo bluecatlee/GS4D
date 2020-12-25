@@ -1,16 +1,16 @@
 package com.github.bluecatlee.gs4d.common.bean;
 
-import javax.validation.constraints.NotNull;
+/**
+ * 用户请求(客户编号不能可选)
+ */
+public class AbstractUserOptionalSessionRequest extends AbstractRequest {
 
-public class AbstractSessionRequest extends AbstractRequest {
-
-    private static final long serialVersionUID = -8235476499697646973L;
+    private static final long serialVersionUID = 3781733049804108331L;
 
     //    @ApiField(description = "客户编号")
-    @NotNull(message = "客户编号不能为空!")
     private Long usrNumId;
 
-    public AbstractSessionRequest() {
+    public AbstractUserOptionalSessionRequest() {
     }
 
     public Long getUsrNumId() {
@@ -21,4 +21,3 @@ public class AbstractSessionRequest extends AbstractRequest {
         this.usrNumId = usrNumId;
     }
 }
-

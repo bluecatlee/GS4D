@@ -13,17 +13,17 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-public class JsonMapper {
+public class MyJsonMapper {
 
-    private static Logger logger = LoggerFactory.getLogger(JsonMapper.class);
-    public static final PropertyNamingStrategy UPPER_CASE_STRATEGY = new JsonMapper.UpperCaseStrategy();
+    private static Logger logger = LoggerFactory.getLogger(MyJsonMapper.class);
+    public static final PropertyNamingStrategy UPPER_SNAKE_CASE_STRATEGY = new MyJsonMapper.UpperSnakeCaseStrategy();
     private ObjectMapper mapper;
 
-    public JsonMapper() {
+    public MyJsonMapper() {
         this((JsonInclude.Include)null);
     }
 
-    public JsonMapper(JsonInclude.Include include) {
+    public MyJsonMapper(JsonInclude.Include include) {
         this.mapper = new ObjectMapper();
         if (include != null) {
             this.mapper.setSerializationInclusion(include);
@@ -32,19 +32,25 @@ public class JsonMapper {
         this.mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
-    public static JsonMapper nonEmptyMapper() {
-        return new JsonMapper(JsonInclude.Include.NON_EMPTY);
+    public ObjectMapper getMapper() {
+        return this.mapper;
     }
 
-    public static JsonMapper nonDefaultMapper() {
-        return new JsonMapper(JsonInclude.Include.NON_DEFAULT);
+    // 属性为空(null)时不参与序列化
+    public static MyJsonMapper nonEmptyMapper() {
+        return new MyJsonMapper(JsonInclude.Include.NON_EMPTY);
+    }
+
+    // 属性为默认值时不参与序列化
+    public static MyJsonMapper nonDefaultMapper() {
+        return new MyJsonMapper(JsonInclude.Include.NON_DEFAULT);
     }
 
     public String toJson(Object object) {
         try {
             return this.mapper.writeValueAsString(object);
-        } catch (IOException var3) {
-            logger.warn("write to json string error:" + object, var3);
+        } catch (IOException e) {
+            logger.warn("write to json string error:" + object, e);
             return null;
         }
     }
@@ -55,8 +61,8 @@ public class JsonMapper {
         } else {
             try {
                 return this.mapper.readValue(jsonString, clazz);
-            } catch (IOException var4) {
-                logger.warn("parse json string error:" + jsonString, var4);
+            } catch (IOException e) {
+                logger.warn("parse json string error:" + jsonString, e);
                 return null;
             }
         }
@@ -68,8 +74,8 @@ public class JsonMapper {
         } else {
             try {
                 return this.mapper.readValue(jsonString, javaType);
-            } catch (IOException var4) {
-                logger.warn("parse json string error:" + jsonString, var4);
+            } catch (IOException e) {
+                logger.warn("parse json string error:" + jsonString, e);
                 return null;
             }
         }
@@ -86,10 +92,10 @@ public class JsonMapper {
     public void update(String jsonString, Object object) {
         try {
             this.mapper.readerForUpdating(object).readValue(jsonString);
-        } catch (JsonProcessingException var4) {
-            logger.warn("update json string:" + jsonString + " to object:" + object + " error.", var4);
-        } catch (IOException var5) {
-            logger.warn("update json string:" + jsonString + " to object:" + object + " error.", var5);
+        } catch (JsonProcessingException e) {
+            logger.warn("update json string:" + jsonString + " to object:" + object + " error.", e);
+        } catch (IOException e) {
+            logger.warn("update json string:" + jsonString + " to object:" + object + " error.", e);
         }
 
     }
@@ -99,32 +105,31 @@ public class JsonMapper {
     }
 
     public void enableEnumUseToString() {
-        this.mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        this.mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);           // 序列化枚举类型值的时候使用枚举的toString()方法,默认使用name()方法
         this.mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
     }
 
     public void enableJaxbAnnotation() {
-        JaxbAnnotationModule module = new JaxbAnnotationModule();
+        JaxbAnnotationModule module = new JaxbAnnotationModule();                       // 启用JaxbAnnotation模块
         this.mapper.registerModule(module);
     }
 
-    public ObjectMapper getMapper() {
-        return this.mapper;
-    }
-
-    public static class UpperCaseStrategy extends PropertyNamingStrategy.PropertyNamingStrategyBase {
+    /**
+     * 自定义蛇形大写命名策略
+     */
+    public static class UpperSnakeCaseStrategy extends PropertyNamingStrategy.PropertyNamingStrategyBase {
         private static final long serialVersionUID = 1L;
 
-        public UpperCaseStrategy() {
+        public UpperSnakeCaseStrategy() {
         }
 
         public String translate(String input) {
             if (input == null) {
                 return input;
-            } else if ("code".equals(input)) {
-                return "Code";
-            } else if ("message".equals(input)) {
-                return "Message";
+//            } else if ("code".equals(input)) {
+//                return "Code";
+//            } else if ("message".equals(input)) {
+//                return "Message";
             } else {
                 int length = input.length();
                 StringBuilder result = new StringBuilder(length * 2);
@@ -155,19 +160,6 @@ public class JsonMapper {
             }
         }
     }
-
-    public static void main(String[] args) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String s = objectMapper.writeValueAsString(false);
-            System.out.println(s);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
 
 }
 

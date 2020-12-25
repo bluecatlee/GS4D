@@ -15,7 +15,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 public class ExceptionUtil {
     private static Logger log = LoggerFactory.getLogger(ExceptionUtil.class);
     private static String systemName = "";
-    private static boolean printFullMesage = false;
+    private static boolean printFullMessage = false;
 
     public ExceptionUtil() {
     }
@@ -76,7 +76,7 @@ public class ExceptionUtil {
                     messagePack.setMessage(systemName + ":rpc服务调用失败");
                 } else {
                     messagePack.setCode(MessagePack.EXCEPTION);
-                    messagePack.setMessage(systemName + "系统执行异常(" + currentTimeMillis + ")" + (printFullMesage ? ex.getMessage() : ""));
+                    messagePack.setMessage(systemName + "系统执行异常(" + currentTimeMillis + ")" + (printFullMessage ? ex.getMessage() : ""));
                 }
             } else {
                 messagePack.setCode(MessagePack.EXCEPTION);
@@ -84,7 +84,7 @@ public class ExceptionUtil {
                     UndeclaredThrowableException undeclaredThrowableException = (UndeclaredThrowableException)ex;
                     messagePack.setFullMessage("系统执行异常 (" + currentTimeMillis + ")" + undeclaredThrowableException.getUndeclaredThrowable().getMessage());
                 } else {
-                    messagePack.setMessage(systemName + "系统执行异常(" + currentTimeMillis + ")" + (printFullMesage ? ex.getMessage() : ""));
+                    messagePack.setMessage(systemName + "系统执行异常(" + currentTimeMillis + ")" + (printFullMessage ? ex.getMessage() : ""));
                 }
             }
 
@@ -97,7 +97,7 @@ public class ExceptionUtil {
      */
     public static void checkDubboException(MessagePack messagePack) {
         if (messagePack == null) {
-            throw new RuntimeException("未传入异常");
+            throw new RuntimeException("未传入MessagePack");
         } else {
             long code = messagePack.getCode();
             if (code != MessagePack.OK) {
@@ -161,7 +161,7 @@ public class ExceptionUtil {
         temp = System.getProperty("print.full.message");
         if (temp != null) {
             log.info("获取到设置print.full.message值为:" + temp);
-            printFullMesage = Boolean.parseBoolean(temp);
+            printFullMessage = Boolean.parseBoolean(temp);
         }
 
     }

@@ -3,8 +3,8 @@ package com.github.bluecatlee.gs4d.common.utils;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 
 public class JsonUtil {
-    private static JsonMapper snakeCaseMapper = new JsonMapper();
-    private static JsonMapper camelMapper = JsonMapper.nonEmptyMapper();
+    private static MyJsonMapper snakeCaseMapper = new MyJsonMapper();
+    private static MyJsonMapper camelMapper = MyJsonMapper.nonEmptyMapper();
 
     public JsonUtil() {
     }

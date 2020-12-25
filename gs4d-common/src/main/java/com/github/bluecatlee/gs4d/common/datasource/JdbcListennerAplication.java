@@ -6,7 +6,7 @@ import com.alibaba.druid.proxy.jdbc.JdbcParameter;
 import com.alibaba.druid.proxy.jdbc.PreparedStatementProxy;
 import com.alibaba.druid.proxy.jdbc.StatementProxy;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.github.bluecatlee.gs4d.common.utils.JsonMapper;
+import com.github.bluecatlee.gs4d.common.utils.MyJsonMapper;
 import com.github.bluecatlee.gs4d.common.model.Parameter;
 import com.github.bluecatlee.gs4d.common.model.SqlAndParamters;
 import com.github.bluecatlee.gs4d.common.model.SycDetailInfo;
@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class JdbcListennerAplication extends FilterAdapter {
-    private static JsonMapper mapper = new JsonMapper();
+    private static MyJsonMapper mapper = new MyJsonMapper();
     private static Logger log = LoggerFactory.getLogger(JdbcListennerAplication.class);
     private Long dataSign = 1L;
     @Value("#{settings['filter.tablename']}")

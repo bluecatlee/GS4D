@@ -1,11 +1,11 @@
 package com.github.bluecatlee.gs4d.common.bean;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseStrategy;
-//import com.gb.soa.omp.ccommon.api.annotation.ApiField;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -24,12 +24,10 @@ public class MessagePack implements Serializable {
 //    )
     private String message = "成功";
 
-    public static long OK = 0L;
-
-    public static long EXCEPTION = -1L;
-
-
     private String fullMessage = null;
+
+    public static long OK = 0L;
+    public static long EXCEPTION = -1L;
 
     public MessagePack() {
     }

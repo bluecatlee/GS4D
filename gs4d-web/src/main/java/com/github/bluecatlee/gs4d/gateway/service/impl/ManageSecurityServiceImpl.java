@@ -7,7 +7,7 @@ import com.github.bluecatlee.gs4d.common.exception.ValidateClientException;
 import com.github.bluecatlee.gs4d.common.utils.DigestsUtil;
 import com.github.bluecatlee.gs4d.common.utils.Encodes;
 import com.github.bluecatlee.gs4d.common.utils.ExceptionUtil;
-import com.github.bluecatlee.gs4d.common.utils.JsonMapper;
+import com.github.bluecatlee.gs4d.common.utils.MyJsonMapper;
 import com.github.bluecatlee.gs4d.gateway.bean.*;
 import com.github.bluecatlee.gs4d.gateway.constant.Constant;
 import com.github.bluecatlee.gs4d.gateway.model.ServiceRequest;
@@ -40,8 +40,8 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
     // 缓存beanId:method与实际class类的映射关系
     private static final Map<String, MethodAndRequestClass> methodAndRequestTypeMap = new ConcurrentHashMap<>();
 
-    private static final JsonMapper mapper = JsonMapper.nonDefaultMapper();
-    private static final JsonMapper camelMapper = JsonMapper.nonDefaultMapper();
+    private static final MyJsonMapper mapper = MyJsonMapper.nonDefaultMapper();
+    private static final MyJsonMapper camelMapper = MyJsonMapper.nonDefaultMapper();
     static {
         mapper.getMapper().setPropertyNamingStrategy(PropertyNamingStrategy.LowerCaseStrategy.SNAKE_CASE);
         camelMapper.getMapper().setPropertyNamingStrategy(PropertyNamingStrategy.LowerCaseStrategy.LOWER_CAMEL_CASE);
@@ -195,25 +195,25 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
                 if (name.equals(method.getName())){
                     if (method.getParameterTypes().length == 1) {
                         Class<?> parameterType = method.getParameterTypes()[0];
-                        if (AbstractUserSessionRequest.class.isAssignableFrom(parameterType)){
+                        if (AbstractEmployeeSessionRequest.class.isAssignableFrom(parameterType)){
                             @SuppressWarnings("unchecked")
-                            Class<? extends AbstractUserSessionRequest> requestClass = (Class<? extends AbstractUserSessionRequest>)parameterType;
+                            Class<? extends AbstractEmployeeSessionRequest> requestClass = (Class<? extends AbstractEmployeeSessionRequest>)parameterType;
                             MethodAndRequestClass mp = new MethodAndRequestClass();
                             mp.setMethod(method);
                             mp.setRequestClass(requestClass);
                             mp.setTypeNumId(1);
                             return mp;
-                        } else if (AbstractOptionalSessionRequest.class.isAssignableFrom(parameterType)) {
+                        } else if (AbstractUserOptionalSessionRequest.class.isAssignableFrom(parameterType)) {
                             @SuppressWarnings("unchecked")
-                            Class<? extends AbstractOptionalSessionRequest> requestClass = (Class<? extends AbstractOptionalSessionRequest>)parameterType;
+                            Class<? extends AbstractUserOptionalSessionRequest> requestClass = (Class<? extends AbstractUserOptionalSessionRequest>)parameterType;
                             MethodAndRequestClass mp = new MethodAndRequestClass();
                             mp.setMethod(method);
                             mp.setRequestClass(requestClass);
                             mp.setTypeNumId(2);
                             return mp;
-                        } else if (AbstractSessionRequest.class.isAssignableFrom(parameterType)) {
+                        } else if (AbstractUserSessionRequest.class.isAssignableFrom(parameterType)) {
                             @SuppressWarnings("unchecked")
-                            Class<? extends AbstractSessionRequest> requestClass = (Class<? extends AbstractSessionRequest>)parameterType;
+                            Class<? extends AbstractUserSessionRequest> requestClass = (Class<? extends AbstractUserSessionRequest>)parameterType;
                             MethodAndRequestClass mp = new MethodAndRequestClass();
                             mp.setMethod(method);
                             mp.setRequestClass(requestClass);
@@ -258,8 +258,8 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
             Method m = mp.getMethod();
             if (mp.getTypeNumId() == 1) {
                 @SuppressWarnings("unchecked")
-                Class<? extends AbstractUserSessionRequest> requestType = (Class<? extends AbstractUserSessionRequest>) mp.getRequestClass();
-                AbstractUserSessionRequest myrequest = mapper.fromJson(serviceRequest.getPlainParams(), requestType);
+                Class<? extends AbstractEmployeeSessionRequest> requestType = (Class<? extends AbstractEmployeeSessionRequest>) mp.getRequestClass();
+                AbstractEmployeeSessionRequest myrequest = mapper.fromJson(serviceRequest.getPlainParams(), requestType);
                 myrequest.setTenantNumId(tenantNumId);
                 myrequest.setDataSign(dataSign);
                 myrequest.setUserNumId((Long) serviceRequest.getAttach());
@@ -267,8 +267,8 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
                 messagePack = (MessagePack) m.invoke(o, myrequest);
             } else if (mp.getTypeNumId() == 3) {
                 @SuppressWarnings("unchecked")
-                Class<? extends AbstractSessionRequest> requestType = (Class<? extends AbstractSessionRequest>) mp.getRequestClass();
-                AbstractSessionRequest myrequest = mapper.fromJson(serviceRequest.getPlainParams(), requestType);
+                Class<? extends AbstractUserSessionRequest> requestType = (Class<? extends AbstractUserSessionRequest>) mp.getRequestClass();
+                AbstractUserSessionRequest myrequest = mapper.fromJson(serviceRequest.getPlainParams(), requestType);
                 myrequest.setTenantNumId(tenantNumId);
                 myrequest.setDataSign(dataSign);
                 myrequest.setUsrNumId((Long) serviceRequest.getAttach());
@@ -276,8 +276,8 @@ public class ManageSecurityServiceImpl implements ManageSecurityService {
                 messagePack = (MessagePack) m.invoke(o, myrequest);
             } else if (mp.getTypeNumId() == 2 && serviceRequest.getAttach() != null) {
                 @SuppressWarnings("unchecked")
-                Class<? extends AbstractOptionalSessionRequest> requestType = (Class<? extends AbstractOptionalSessionRequest>) mp.getRequestClass();
-                AbstractOptionalSessionRequest myrequest = mapper.fromJson(serviceRequest.getPlainParams(), requestType);
+                Class<? extends AbstractUserOptionalSessionRequest> requestType = (Class<? extends AbstractUserOptionalSessionRequest>) mp.getRequestClass();
+                AbstractUserOptionalSessionRequest myrequest = mapper.fromJson(serviceRequest.getPlainParams(), requestType);
                 myrequest.setTenantNumId(tenantNumId);
                 myrequest.setDataSign(dataSign);
                 myrequest.setUsrNumId((Long) serviceRequest.getAttach());
