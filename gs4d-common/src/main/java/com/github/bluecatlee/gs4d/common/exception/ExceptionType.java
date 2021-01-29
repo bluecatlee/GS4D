@@ -8,6 +8,11 @@ import java.util.Map;
 public enum ExceptionType {
     VCE10000(-10000L, ExceptionTypeCategory.VALIDATE_CLIENT_EXCEPTION, ExceptionType.SubSystem.SUB_SYSTEM_MANAGE, "通用客户端校验异常"),
     VCE10001(-10001L, ExceptionTypeCategory.VALIDATE_CLIENT_EXCEPTION, ExceptionType.SubSystem.SUB_SYSTEM_MANAGE, "后台管理系统客户端验证异常"),
+    VCE10007(-10007L, ExceptionTypeCategory.VALIDATE_CLIENT_EXCEPTION, ExceptionType.SubSystem.SUB_SYSTEM_CBASEINFO, "基础资料客户端验证异常"),
+
+    VBE20007(-20007L, ExceptionTypeCategory.VALIDATE_BUSINESS_EXCEPTION, ExceptionType.SubSystem.SUB_SYSTEM_CBASEINFO, "基础资料业务验证异常"),
+
+    BE40144(-40144L, ExceptionTypeCategory.BUSINESS_EXCEPTION, ExceptionType.SubSystem.SUB_SYSTEM_CBASEINFO, "探测系统时发现系统停止！"),
     ;
 
     /**
@@ -87,6 +92,7 @@ public enum ExceptionType {
      */
     private static class SubSystem {
         public static String SUB_SYSTEM_MANAGE = "manage";
+        public static String SUB_SYSTEM_CBASEINFO = "baseinfo";
 
         private SubSystem() {
         }

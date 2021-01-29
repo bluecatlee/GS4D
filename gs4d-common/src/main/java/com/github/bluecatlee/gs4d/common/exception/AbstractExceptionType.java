@@ -16,13 +16,15 @@ public abstract class AbstractExceptionType {
         this.subSystem = subSystem;
         this.description = description;
         this.category = category;
+        lookup.put(code, this);         // 子类实例化的时候 这个this指向的是子类
     }
 
-    protected AbstractExceptionType(long code, ExceptionTypeCategory category, String description) {
-        this.category = category;
-        this.code = code;
-        this.description = description;
-    }
+//    protected AbstractExceptionType(long code, ExceptionTypeCategory category, String description) {
+//        this.category = category;
+//        this.code = code;
+//        this.description = description;
+//        lookup.put(code, this);
+//    }
 
     public long getCode() {
         return this.code;
@@ -57,7 +59,7 @@ public abstract class AbstractExceptionType {
     }
 
     public AbstractExceptionType getAbstractExceptionTypeByCode(long code) {
-        throw new RuntimeException("不支持方法，请在子类实现！");
+        return lookup.get(code);
     }
 
 }

@@ -7,6 +7,10 @@
     <groupId>com.github.bluecatlee.gs4d</groupId>
     <artifactId>gs4d-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>../gs4d-monitor-api</module>
+        <module>../gs4d-sequence</module>
+    </modules>
     <packaging>pom</packaging>
 
     <parent>
@@ -16,6 +20,10 @@
         <relativePath />
         <!-- lookup parent from repository -->
     </parent>
+
+<!--    <modules>-->
+<!--        <module>../gs4d-monitor</module>-->
+<!--    </modules>-->
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
