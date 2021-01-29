@@ -3,7 +3,7 @@ package com.github.bluecatlee.gs4d.sequence.service.impl;
 import com.github.bluecatlee.gs4d.common.utils.RedisLock;
 import com.github.bluecatlee.gs4d.sequence.dao.AutoSequenceDao;
 import com.github.bluecatlee.gs4d.sequence.dao.PlatformOfflineSubUnitSequenceDao;
-import com.github.bluecatlee.gs4d.sequence.dao.SequenceDAO;
+import com.github.bluecatlee.gs4d.sequence.dao.SequenceDao;
 import com.github.bluecatlee.gs4d.sequence.exception.SequenceException;
 import com.github.bluecatlee.gs4d.sequence.model.CreateSequence;
 import com.github.bluecatlee.gs4d.sequence.model.PlatformAutoSequence;
@@ -12,7 +12,7 @@ import com.github.bluecatlee.gs4d.sequence.model.PlatformOfflineSubUnitSequence;
 import com.github.bluecatlee.gs4d.sequence.service.SequenceActionService;
 import com.github.bluecatlee.gs4d.sequence.service.SequenceTimeService;
 import com.github.bluecatlee.gs4d.sequence.utils.DateUtil;
-import com.github.bluecatlee.gs4d.sequence.utils.SeqStringUtils;
+import com.github.bluecatlee.gs4d.sequence.utils.SeqStringUtil;
 import net.sf.json.JSONObject;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -41,7 +41,7 @@ import java.util.*;
 public class SequenceActionServiceImpl implements SequenceActionService, Watcher {
 
     @Autowired
-    private SequenceDAO sequenceDAO;
+    private SequenceDao sequenceDAO;
 
     @Autowired
     private AutoSequenceDao autoSequenceDao;
@@ -70,19 +70,10 @@ public class SequenceActionServiceImpl implements SequenceActionService, Watcher
     @Value("#{settings['zk.sequence.host.port']}")
     public String zkAdress;
 
-    @Value("#{settings['smsPostUrl']}")
-    public String smsPostUrl;
-
-    @Value("#{settings['smsPostTitle']}")
-    public String smsPostTitle;
-
-    @Value("#{settings['smsMobileDefault']}")
-    public String smsMobileDefault;
-
     protected static Logger logger = LoggerFactory.getLogger(SequenceActionServiceImpl.class);
 
     @PostConstruct
-    private void a() throws SequenceException {
+    private void post() throws SequenceException {
         try {
             ExponentialBackoffRetry var1 = new ExponentialBackoffRetry(1000, 3);
             CuratorFramework var2 = CuratorFrameworkFactory.newClient(this.zkAdress, var1);
@@ -358,7 +349,7 @@ public class SequenceActionServiceImpl implements SequenceActionService, Watcher
                 if (flowCodeLength.longValue() > 0L) {
                     int i = flowCode.toString().length();
                     if (i <= flowCodeLength.intValue()) {
-                        String flowCodeP = SeqStringUtils.frontCompWithZore(flowCode, flowCodeLength.intValue());
+                        String flowCodeP = SeqStringUtil.frontCompWithZore(flowCode, flowCodeLength.intValue());
                         stringBuffer.append(flowCodeP);
                     } else if (i > flowCodeLength.intValue()) {
                         throw new SequenceException("流水号的长度超过指定长度，自增长序列为：" + seqName);
@@ -410,25 +401,25 @@ public class SequenceActionServiceImpl implements SequenceActionService, Watcher
             list2 = this.platformOfflineSubUnitSequenceDao.getOfflineSubUnitSequence(subUnitNumId);
             if (list2.size() > 0) {
                 for (PlatformOfflineSubUnitSequence e : list2) {
-                    String str = e.getSeqName();
+                    String seqName = e.getSeqName();
                     CreateSequence createSequence1 = new CreateSequence();
-                    createSequence1.setSeqName(str);
+                    createSequence1.setSeqName(seqName);
                     list = this.sequenceDAO.getSequence(createSequence1);
                     if (list.size() <= 0) {
-                        throw new SequenceException("platform_sequence表未查询到配置的序列,序列名称为：" + str);
+                        throw new SequenceException("platform_sequence表未查询到配置的序列,序列名称为：" + seqName);
                     }
                     CreateSequence createSequence2 = list.get(0);
-                    Long long_1 = e.getStartNum();
-                    Long long_2 = e.getEndNum();
+                    Long startNum = e.getStartNum();
+                    Long endNum = e.getEndNum();
                     HashMap<Object, Object> hashMap = new HashMap<>();
-                    hashMap.put("seq_name", str);
+                    hashMap.put("seq_name", seqName);
                     hashMap.put("SEQ_PROJECT", createSequence2.getSeqProject());
                     hashMap.put("SEQ_PREFIX", createSequence2.getSeqPrefix());
                     hashMap.put("SEQ_NUM", createSequence2.getSeqNum());
                     hashMap.put("SEQ_VAL", createSequence2.getSeqVal());
-                    hashMap.put("CURRENT_NUM", long_1);
-                    hashMap.put("SEQ_NUM_START", long_1);
-                    hashMap.put("SEQ_NUM_END", long_2);
+                    hashMap.put("CURRENT_NUM", startNum);
+                    hashMap.put("SEQ_NUM_START", startNum);
+                    hashMap.put("SEQ_NUM_END", endNum);
                     hashMap.put("disrupt", createSequence2.getDisrupt());
                     hashMap.put("is_store_local", Integer.valueOf(1));
                     arrayList.add(hashMap);
@@ -436,34 +427,36 @@ public class SequenceActionServiceImpl implements SequenceActionService, Watcher
                 return (List)arrayList;
             }
             list1 = this.platformOfflineSubUnitSequenceDao.getOfflineSubSequence();
-            if (list1.size() <= 0)
+            if (list1.size() <= 0) {
                 return (List)arrayList;
+            }
             for (PlatformOfflineSequence d : list1) {
-                String str = d.getSeqName();
+                String seqName = d.getSeqName();
                 CreateSequence createSequence1 = new CreateSequence();
-                createSequence1.setSeqName(str);
+                createSequence1.setSeqName(seqName);
                 list = this.sequenceDAO.getSequence(createSequence1);
                 if (list.size() <= 0) {
                     throw new SequenceException("platform_sequence表未查询到配置的序列,序列名称为：" + d.getSeqName());
                 }
                 CreateSequence createSequence2 = list.get(0);
-                Long long_1 = d.getOfflineGetNumCount();
-                Long long_2 = d.getOfflineCurrentNum();
-                Long long_3 = long_2;
-                Long long_4 = Long.valueOf(long_2.longValue() + long_1.longValue());
-                Long long_5 = d.getOfflineEndNum();
-                if (long_4.intValue() >= long_5.intValue())
+                Long offlineGetNumCount = d.getOfflineGetNumCount();
+                Long offlineCurrentNum = d.getOfflineCurrentNum();
+                Long long_3 = offlineCurrentNum;
+                Long long_4 = Long.valueOf(offlineCurrentNum.longValue() + offlineGetNumCount.longValue());
+                Long offlineEndNum = d.getOfflineEndNum();
+                if (long_4.intValue() >= offlineEndNum.intValue()) {
                     throw new SequenceException("离线序列的结束值不能超过限定的结束值，序列名称为：" + d.getSeqName());
-                this.platformOfflineSubUnitSequenceDao.updateOfflineCurrentNum(str);
+                }
+                this.platformOfflineSubUnitSequenceDao.updateOfflineCurrentNum(seqName);
                 PlatformOfflineSubUnitSequence e = new PlatformOfflineSubUnitSequence();
                 e.setSeries(Long.valueOf(System.currentTimeMillis()));
-                e.setSeqName(str);
+                e.setSeqName(seqName);
                 e.setSubUnitNumId(subUnitNumId);
                 e.setStartNum(long_3);
                 e.setEndNum(long_4);
                 this.platformOfflineSubUnitSequenceDao.insertOfflineSeq(e);
                 HashMap<Object, Object> hashMap = new HashMap<>();
-                hashMap.put("seq_name", str);
+                hashMap.put("seq_name", seqName);
                 hashMap.put("SEQ_PROJECT", createSequence2.getSeqProject());
                 hashMap.put("SEQ_PREFIX", createSequence2.getSeqPrefix());
                 hashMap.put("SEQ_NUM", createSequence2.getSeqNum());

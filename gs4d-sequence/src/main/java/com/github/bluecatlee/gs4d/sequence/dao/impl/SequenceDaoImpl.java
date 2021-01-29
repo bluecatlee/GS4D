@@ -1,9 +1,9 @@
 package com.github.bluecatlee.gs4d.sequence.dao.impl;
 
 import com.github.bluecatlee.gs4d.common.utils.MyJdbcTemplate;
-import com.github.bluecatlee.gs4d.sequence.dao.SequenceDAO;
+import com.github.bluecatlee.gs4d.sequence.dao.SequenceDao;
 import com.github.bluecatlee.gs4d.sequence.model.CreateSequence;
-import com.github.bluecatlee.gs4d.sequence.utils.J;
+import com.github.bluecatlee.gs4d.sequence.utils.SqlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Repository
-public class SequenceDAOImpl implements SequenceDAO {
+public class SequenceDaoImpl implements SequenceDao {
 
     @Resource(name = "jdbcTemplate")
     public MyJdbcTemplate jdbcTemplate;
@@ -23,12 +23,12 @@ public class SequenceDAOImpl implements SequenceDAO {
     @Value("#{settings['mycatGoMaster']}")
     private String mycatGoMaster;
 
-    protected static Logger logger = LoggerFactory.getLogger(SequenceDAOImpl.class);
+    protected static Logger logger = LoggerFactory.getLogger(SequenceDaoImpl.class);
 
     public void insertSeq(CreateSequence paramCreateSequence) throws Exception {
         String str = "insert into PLATFORM_SEQUENCE(SERIES,SEQ_NAME,SEQ_PROJECT,SEQ_PREFIX,SEQ_NUM,SEQ_VAL,CURRENT_NUM,CREATE_TIME,SEQ_NUM_START,SEQ_NUM_END)";
         Object[] arrayOfObject = { paramCreateSequence.getSeries(), paramCreateSequence.getSeqName(), paramCreateSequence.getSeqProject(), paramCreateSequence.getSeqPrefix(), paramCreateSequence.getSeqNum(), paramCreateSequence.getSeqVal(), paramCreateSequence.getCurrentNum(), paramCreateSequence.getCreateTime(), paramCreateSequence.getSeqNumStart(), paramCreateSequence.getSeqNumEnd() };
-        str = str + J.e(arrayOfObject.length);
+        str = str + SqlUtil.genSqlValues(arrayOfObject.length);
         this.jdbcTemplate.update(str, arrayOfObject);
     }
 

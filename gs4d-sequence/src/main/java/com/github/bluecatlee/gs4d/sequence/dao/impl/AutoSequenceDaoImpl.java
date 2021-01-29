@@ -2,7 +2,7 @@ package com.github.bluecatlee.gs4d.sequence.dao.impl;
 
 import com.github.bluecatlee.gs4d.common.utils.MyJdbcTemplate;
 import com.github.bluecatlee.gs4d.sequence.dao.AutoSequenceDao;
-import com.github.bluecatlee.gs4d.sequence.model.A;
+import com.github.bluecatlee.gs4d.sequence.model.AutoSequence;
 import com.github.bluecatlee.gs4d.sequence.model.PlatformAutoSequence;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -41,9 +41,9 @@ public class AutoSequenceDaoImpl implements AutoSequenceDao {
         this.jdbcTemplate.update(this.mycatGoMaster + str);
     }
 
-    public List<A> getClearAutoSeq() {
+    public List<AutoSequence> getClearAutoSeq() {
         String str = "select SERIES,TENANT_NUM_ID,DATA_SIGN,SEQ_NAME from platform_auto_sequence  where is_clear = 6 LIMIT 10000";
-        return this.jdbcTemplate.query(this.mycatGoMaster + str, (RowMapper)new BeanPropertyRowMapper(A.class));
+        return this.jdbcTemplate.query(this.mycatGoMaster + str, (RowMapper)new BeanPropertyRowMapper(AutoSequence.class));
     }
 
 }

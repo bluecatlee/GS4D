@@ -2,7 +2,7 @@ package com.github.bluecatlee.gs4d.sequence.model;
 
 import java.io.Serializable;
 
-public class A implements Serializable {
+public class AutoSequence implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long series;

@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class SeqStringUtils {
+public class SeqStringUtil {
 
     public static final String EMPTY = "";
     private static final int PAD_LIMIT = 8192;
 
-    public SeqStringUtils() {
+    public SeqStringUtil() {
     }
 
     public static List<Integer> createSolution(int len) {

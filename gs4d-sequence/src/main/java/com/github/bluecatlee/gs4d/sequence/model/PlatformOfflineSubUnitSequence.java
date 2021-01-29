@@ -14,7 +14,7 @@ public class PlatformOfflineSubUnitSequence implements Serializable {
 
     private Long endNum; // I
 
-    private Long subUnitNumId; //J
+    private Long subUnitNumId; //j
 
     private Date createDtme; //G
 

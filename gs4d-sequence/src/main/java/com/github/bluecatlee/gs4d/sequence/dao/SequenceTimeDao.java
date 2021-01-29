@@ -2,7 +2,7 @@ package com.github.bluecatlee.gs4d.sequence.dao;
 
 import java.util.Date;
 
-public interface SequenceTimeDAO {
+public interface SequenceTimeDao {
 
     void insertTime(String paramString, Date paramDate) throws Exception;
 

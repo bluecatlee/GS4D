@@ -4,7 +4,7 @@ import com.github.bluecatlee.gs4d.common.utils.MyJdbcTemplate;
 import com.github.bluecatlee.gs4d.sequence.dao.PlatformOfflineSubUnitSequenceDao;
 import com.github.bluecatlee.gs4d.sequence.model.PlatformOfflineSequence;
 import com.github.bluecatlee.gs4d.sequence.model.PlatformOfflineSubUnitSequence;
-import com.github.bluecatlee.gs4d.sequence.utils.J;
+import com.github.bluecatlee.gs4d.sequence.utils.SqlUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
@@ -25,7 +25,7 @@ public class PlatformOfflineSubUnitSequenceDaoImpl implements PlatformOfflineSub
     public void insertOfflineSeq(PlatformOfflineSubUnitSequence parame) throws Exception {
         String str = "insert into platform_offline_sub_unit_sequence(SERIES,SEQ_NAME,start_num,end_num,sub_unit_num_id)";
         Object[] arrayOfObject = { parame.getSeries(), parame.getSeqName(), parame.getStartNum(), parame.getEndNum(), parame.getSubUnitNumId() };
-        str = str + J.e(arrayOfObject.length);
+        str = str + SqlUtil.genSqlValues(arrayOfObject.length);
         this.jdbcTemplate.update(this.mycatGoMaster + str, arrayOfObject);
     }
 

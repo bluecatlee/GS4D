@@ -6,7 +6,7 @@ import com.github.bluecatlee.gs4d.sequence.exception.SequenceException;
 import com.github.bluecatlee.gs4d.sequence.model.CreateSequence;
 import com.github.bluecatlee.gs4d.sequence.utils.Constant;
 import com.github.bluecatlee.gs4d.sequence.utils.PropertiesUtil;
-import com.github.bluecatlee.gs4d.sequence.utils.SeqStringUtils;
+import com.github.bluecatlee.gs4d.sequence.utils.SeqStringUtil;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -174,7 +174,7 @@ public class SequenceCliActionService {
         String key = seqName.trim();
         List<Integer> seqValueList = (List)seqValueMap.get(key);
         if (null == seqValueList || seqValueList.size() <= 0) {
-            seqValueList = SeqStringUtils.createSolution(Integer.valueOf(maxVal));
+            seqValueList = SeqStringUtil.createSolution(Integer.valueOf(maxVal));
             seqValueMap.put(key, seqValueList);
         }
 
@@ -219,18 +219,18 @@ public class SequenceCliActionService {
      * @return
      */
     private Long installSeqNum(String maxNum, String maxVal, String currentNum, String dateTime, String proFix, Integer currentSeqVal, List<Integer> seqValueList) {
-        String resultVal = SeqStringUtils.frontCompWithZore((long)(Integer)seqValueList.get(currentSeqVal), maxVal.length());  // 当前序列值按最大序列值长度进行补零
+        String resultVal = SeqStringUtil.frontCompWithZore((long)(Integer)seqValueList.get(currentSeqVal), maxVal.length());  // 当前序列值按最大序列值长度进行补零
         String[] split = dateTime.split("-");               // yyyy-MM-dd
         String year = dateTime.substring(2, split[0].length());    // 年(两位)
         String month = split[1];                                   // 月
         Integer day = Integer.valueOf(split[2]);                   // 日
-        String currentSeqNum = SeqStringUtils.getSquByNum(maxNum, currentNum);  // 当前序列Num按最大序列数长度进行补零
+        String currentSeqNum = SeqStringUtil.getSquByNum(maxNum, currentNum);  // 当前序列Num按最大序列数长度进行补零
 
         List<String> dayList = new ArrayList();
-        dayList.add(SeqStringUtils.frontCompWithZore((long)day, 2));                            // 日期两位补零  01-31
-        dayList.add(SeqStringUtils.frontCompWithZore((long)(day + Constant.DAY_NUM), 2));       // 32-62
-        dayList.add(SeqStringUtils.frontCompWithZore((long)(day + Constant.DAY_NUM * 2), 2));   // 63-93
-        String resultDay = SeqStringUtils.getRandomNum(dayList);                                              // 随机获取一个日期(01-93)
+        dayList.add(SeqStringUtil.frontCompWithZore((long)day, 2));                            // 日期两位补零  01-31
+        dayList.add(SeqStringUtil.frontCompWithZore((long)(day + Constant.DAY_NUM), 2));       // 32-62
+        dayList.add(SeqStringUtil.frontCompWithZore((long)(day + Constant.DAY_NUM * 2), 2));   // 63-93
+        String resultDay = SeqStringUtil.getRandomNum(dayList);                                              // 随机获取一个日期(01-93)
         char[] chYear = year.toCharArray();
         char[] chMonth = month.toCharArray();
         char[] chDay = resultDay.toCharArray();
@@ -511,7 +511,7 @@ public class SequenceCliActionService {
                             if (proCurrentNum > Long.valueOf(currentNum) && proSequenceTime.equals(dateTime)) {
                                 PropertiesUtil.updateProperty(proSequence, mapKey, JSONObject.fromObject(cacheSequenceModel).toString(), filePath);
                                 PropertiesUtil.updateProperty(proSequence, mapKey + "_cache", "", filePath);
-                                List<Integer> seqValueList = SeqStringUtils.createSolution(Integer.valueOf(cacheSequenceModel.getSeqVal()));
+                                List<Integer> seqValueList = SeqStringUtil.createSolution(Integer.valueOf(cacheSequenceModel.getSeqVal()));
                                 PropertiesUtil.updateProperty(proSequence, mapKey + "_disrupt", mapper.toJson(seqValueList), filePath);
                             } else {
                                 this.getSequenceToMap(systemName, seqName, "first", proSequence, filePath);
@@ -650,7 +650,7 @@ public class SequenceCliActionService {
                     PropertiesUtil.updateProperty(proSequence, seqName, JSONObject.fromObject(createSequence).toString(), filePath);
                     Long disrupt = createSequence.getDisrupt();
                     if (disrupt == 1L) {
-                        List<Integer> offLineSeqValueList = SeqStringUtils.createSolution(Integer.valueOf(createSequence.getSeqVal()));
+                        List<Integer> offLineSeqValueList = SeqStringUtil.createSolution(Integer.valueOf(createSequence.getSeqVal()));
                         PropertiesUtil.updateProperty(proSequence, seqName + "_disrupt", mapper.toJson(offLineSeqValueList), filePath);
                     }
                 } else if (fromWhere.equals("middle")) {
@@ -685,8 +685,8 @@ public class SequenceCliActionService {
     private Long makeSeqFunction(String dateTime, String maxVal, String maxNum, String proFix, String currentNum, String parm) {
         dateTime = dateTime.replaceAll("-", "");   // yyyy-MM-dd
         dateTime = dateTime.substring(2, dateTime.length());
-        String currentSeqNum = SeqStringUtils.getSquByNum(maxNum, currentNum);
-        String currentSeqValue = SeqStringUtils.getSquByNum(maxVal, parm);
+        String currentSeqNum = SeqStringUtil.getSquByNum(maxNum, currentNum);
+        String currentSeqValue = SeqStringUtil.getSquByNum(maxVal, parm);
         // [前缀] + yyMMdd + 当前序列(补零) + 当前序列值(补零)
         // 2101262080001
         //          210126      208             0001

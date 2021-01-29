@@ -4,7 +4,7 @@ import com.github.bluecatlee.gs4d.sequence.model.CreateSequence;
 
 import java.util.List;
 
-public interface SequenceDAO {
+public interface SequenceDao {
 
     void insertSeq(CreateSequence paramCreateSequence) throws Exception;
 

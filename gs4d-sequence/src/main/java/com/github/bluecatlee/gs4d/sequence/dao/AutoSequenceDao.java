@@ -1,6 +1,6 @@
 package com.github.bluecatlee.gs4d.sequence.dao;
 
-import com.github.bluecatlee.gs4d.sequence.model.A;
+import com.github.bluecatlee.gs4d.sequence.model.AutoSequence;
 import com.github.bluecatlee.gs4d.sequence.model.PlatformAutoSequence;
 
 import java.util.List;
@@ -13,6 +13,6 @@ public interface AutoSequenceDao {
 
     void updateAutoCurrentNum();
 
-    List<A> getClearAutoSeq();
+    List<AutoSequence> getClearAutoSeq();
 
 }

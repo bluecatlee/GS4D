@@ -1,6 +1,6 @@
 package com.github.bluecatlee.gs4d.sequence.service.impl;
 
-import com.github.bluecatlee.gs4d.sequence.dao.SequenceTimeDAO;
+import com.github.bluecatlee.gs4d.sequence.dao.SequenceTimeDao;
 import com.github.bluecatlee.gs4d.sequence.exception.SequenceException;
 import com.github.bluecatlee.gs4d.sequence.service.SequenceTimeService;
 import com.github.bluecatlee.gs4d.sequence.utils.DateUtil;
@@ -15,7 +15,7 @@ import java.util.Date;
 public class SequenceTimeServiceImpl implements SequenceTimeService {
 
     @Autowired
-    private SequenceTimeDAO O;
+    private SequenceTimeDao O;
 
     protected static Logger logger = LoggerFactory.getLogger(SequenceTimeServiceImpl.class);
 

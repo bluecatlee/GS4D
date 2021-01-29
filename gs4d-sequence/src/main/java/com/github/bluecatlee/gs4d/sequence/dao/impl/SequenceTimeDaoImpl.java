@@ -1,16 +1,16 @@
 package com.github.bluecatlee.gs4d.sequence.dao.impl;
 
-import java.util.Date;
-import javax.annotation.Resource;
-
 import com.github.bluecatlee.gs4d.common.utils.MyJdbcTemplate;
-import com.github.bluecatlee.gs4d.sequence.dao.SequenceTimeDAO;
-import com.github.bluecatlee.gs4d.sequence.utils.J;
+import com.github.bluecatlee.gs4d.sequence.dao.SequenceTimeDao;
+import com.github.bluecatlee.gs4d.sequence.utils.SqlUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.Resource;
+import java.util.Date;
+
 @Repository
-public class SequenceTimeDAOImpl implements SequenceTimeDAO {
+public class SequenceTimeDaoImpl implements SequenceTimeDao {
 
     @Resource(name = "jdbcTemplate")
     public MyJdbcTemplate jdbcTemplate;
@@ -21,7 +21,7 @@ public class SequenceTimeDAOImpl implements SequenceTimeDAO {
     public void insertTime(String paramString, Date paramDate) throws Exception {
         String str = "insert into PLATFORM_SEQUENCE_TIME(SEQUENCE_TIME,LAST_UPDTME)";
         Object[] arrayOfObject = { paramString, paramDate };
-        str = str + J.e(arrayOfObject.length);
+        str = str + SqlUtil.genSqlValues(arrayOfObject.length);
         this.jdbcTemplate.update(this.mycatGoMaster + str, arrayOfObject);
     }
 

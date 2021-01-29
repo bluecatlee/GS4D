@@ -14,7 +14,7 @@ public class RedisLock {
     private StringRedisTemplate stringRedisTemplate;
     private String lockKey;
     private String value;
-    private static final String PREFIX_KEY = "gb.common.distributed.lock.redis_";
+    private static final String PREFIX_KEY = "distributed.lock.redis_";
     private boolean locked;
     private int expireSecond;
     private int timeout;

@@ -110,15 +110,21 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.11</version>
         </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>commons-codec</groupId>-->
+            <!--<artifactId>commons-codec</artifactId>-->
+            <!--<version>1.15</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>4.0.0</version>
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>commons-codec</groupId>-->
+                    <!--<artifactId>commons-codec</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->  <!-- 注意exclusions不会传递 如果某一级pom已经产生了版本冲突 在这一级排除之后 所有依赖该级的pom依然会冲突-->
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>

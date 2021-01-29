@@ -10,6 +10,7 @@
     <modules>
         <module>../gs4d-monitor-api</module>
         <module>../gs4d-sequence</module>
+        <module>../gs4d-common</module>
     </modules>
     <packaging>pom</packaging>
 

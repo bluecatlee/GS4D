@@ -1,7 +1,7 @@
 package com.github.bluecatlee.gs4d.sequence.service;
 
 import com.github.bluecatlee.gs4d.sequence.exception.SequenceException;
-import com.github.bluecatlee.gs4d.sequence.utils.SeqStringUtils;
+import com.github.bluecatlee.gs4d.sequence.utils.SeqStringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class SubSequenceService {
                 subId = subId.toString().substring(subId.toString().length() - 3, subId.toString().length());
             } else {
                 // 否则 左填充0 直到满足长度为3
-                subId = SeqStringUtils.leftPad(subId.toString(), 3, '0');
+                subId = SeqStringUtil.leftPad(subId.toString(), 3, '0');
             }
 
             Long nosubseq = this.seq.getNoSubSequence(systemName, SeqName); // 调用序列服务
@@ -49,7 +49,7 @@ public class SubSequenceService {
             if (subId.toString().length() >= 3) {
                 subId = subId.toString().substring(subId.toString().length() - 3, subId.toString().length());
             } else {
-                subId = SeqStringUtils.leftPad(subId.toString(), 3, '0');
+                subId = SeqStringUtil.leftPad(subId.toString(), 3, '0');
             }
 
             Long nosubseq = this.seq.getNoSubSequence(systemName, SeqName);

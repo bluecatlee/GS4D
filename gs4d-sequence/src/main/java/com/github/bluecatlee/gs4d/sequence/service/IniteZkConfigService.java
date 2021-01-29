@@ -5,7 +5,6 @@ import com.github.bluecatlee.gs4d.sequence.model.CreateSequence;
 import com.github.bluecatlee.gs4d.sequence.utils.Constant;
 import com.github.bluecatlee.gs4d.sequence.utils.DubboImpl;
 import com.github.bluecatlee.gs4d.sequence.utils.PropertiesUtil;
-import com.github.bluecatlee.gs4d.sequence.utils.ZkAddressUtil;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -30,6 +29,7 @@ public class IniteZkConfigService implements Watcher {
     public static ZooKeeper zk;
     public static String seqFilePath;
     public static int sessionTimeout = 30000;
+    public static final Integer updateTimeSche = 21600000;
     public static ExecutorService executor;
     public static String currentDayDate = "/seqNode/currentDayDate";
     public static String seqNode = "/seqNode";
@@ -71,7 +71,7 @@ public class IniteZkConfigService implements Watcher {
                 }
 
                 updateZkTime = new Timer(true);
-                updateZkTime.schedule(new UpdateZkTimeTask(), 0L, (long) ZkAddressUtil.updateTimeSche); // 创建定时器 定时执行任务(定时续命)
+                updateZkTime.schedule(new UpdateZkTimeTask(), 0L, (long) updateTimeSche); // 创建定时器 定时执行任务(定时续命)
 
             } catch (Exception var6) {
                 logger.error("zk状态监听失败" + var6.getMessage(), var6);
