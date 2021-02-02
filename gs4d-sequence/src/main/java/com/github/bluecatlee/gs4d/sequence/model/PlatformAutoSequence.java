@@ -8,9 +8,9 @@ public class PlatformAutoSequence implements Serializable {
 
     private Long series;
 
-    private Long tenantNumId; // h
+    private Long tenantNumId;
 
-    private Long dataSign; // i
+    private Long dataSign;
 
     private String seqName;
 
@@ -20,27 +20,27 @@ public class PlatformAutoSequence implements Serializable {
 
     private Long currentNum;
 
-    private Integer isYear;  // j
+    private Integer isYear;
 
-    private Integer isMonth;  // k
+    private Integer isMonth;
 
-    private Integer isDay; // l
+    private Integer isDay;
 
-    private Integer isFlowCode; // m
+    private Integer isFlowCode;
 
     private Date createTime;
 
-    private String remark; // n
+    private String remark;
 
-    private String spare; // o
+    private String spare;
 
-    private Long initValue;   // p
+    private Long initValue;
 
-    private Long isClear;       // q
+    private Long isClear;
 
-    private Long flowCodeLength; // r
+    private Long flowCodeLength;
 
-    private Integer cacheNum;  // s
+    private Integer cacheNum;
 
     public Integer getCacheNum() {
         return this.cacheNum;

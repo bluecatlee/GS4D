@@ -15,5 +15,6 @@ public interface SequenceActionService {
 
     Integer getSeqStoreStatus(String seqName);
 
+    @Deprecated
     List<Map<String, Object>> getOfflineSeqInfo(Long var1);
 }

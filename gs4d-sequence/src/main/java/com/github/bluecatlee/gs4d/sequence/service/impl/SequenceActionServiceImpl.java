@@ -14,24 +14,15 @@ import com.github.bluecatlee.gs4d.sequence.service.SequenceTimeService;
 import com.github.bluecatlee.gs4d.sequence.utils.DateUtil;
 import com.github.bluecatlee.gs4d.sequence.utils.SeqStringUtil;
 import net.sf.json.JSONObject;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -52,52 +43,52 @@ public class SequenceActionServiceImpl implements SequenceActionService, Watcher
     @Autowired
     private SequenceTimeService sequenceTimeService;
 
-    public static ZooKeeper a;
+//    public static ZooKeeper a;
+//
+//    public static String c = "/seqNode";
+//
+//    public static String d = "/seqNode/generaterMaxNum";
+//
+//    public static String e = "/seqNode/generaterMaxValue";
+//
+//    public static String f = "/seqNode/currentDayDate";
 
-    public static String c = "/seqNode";
-
-    public static String d = "/seqNode/generaterMaxNum";
-
-    public static String e = "/seqNode/generaterMaxValue";
-
-    public static String f = "/seqNode/currentDayDate";
-
-    public static CuratorFramework L;
+//    public static CuratorFramework cf;
 
     @Resource(name = "stringRedisTemplate")
     private StringRedisTemplate stringRedisTemplate;
 
-    @Value("#{settings['zk.sequence.host.port']}")
-    public String zkAdress;
+//    @Value("#{settings['zk.sequence.host.port']}")
+//    public String zkAdress;
 
     protected static Logger logger = LoggerFactory.getLogger(SequenceActionServiceImpl.class);
 
-    @PostConstruct
-    private void post() throws SequenceException {
-        try {
-            ExponentialBackoffRetry var1 = new ExponentialBackoffRetry(1000, 3);
-            CuratorFramework var2 = CuratorFrameworkFactory.newClient(this.zkAdress, var1);
-            var2.start();
-            L = var2;
-            TreeCache var3 = new TreeCache(L, "/seqlocks");
-            var3.getListenable().addListener(new TreeCacheListener() {
-                public void childEvent(CuratorFramework var1, TreeCacheEvent var2) {
-                    if (var2.getType().name().equals("CONNECTION_SUSPENDED") || var2.getType().name().equals("CONNECTION_LOST")) {
-                        SequenceActionServiceImpl.L.close();
-                        ExponentialBackoffRetry var3 = new ExponentialBackoffRetry(5000, 3);
-                        SequenceActionServiceImpl.L = CuratorFrameworkFactory.newClient(SequenceActionServiceImpl.this.zkAdress, var3);
-                        SequenceActionServiceImpl.L.start();
-                    }
-
-                }
-            });
-            var3.start();
-            this.sequenceTimeService.editTime();
-        } catch (Exception var4) {
-            logger.error(var4.getMessage(), var4);
-            throw new SequenceException(var4.getMessage());
-        }
-    }
+//    @PostConstruct
+//    private void post() throws SequenceException {
+//        try {
+//            ExponentialBackoffRetry retryPolicy = new ExponentialBackoffRetry(1000, 3);
+//            CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient(this.zkAdress, retryPolicy);
+//            curatorFramework.start();
+//            cf = curatorFramework;
+//            TreeCache treeCache = new TreeCache(cf, "/seqlocks");
+//            treeCache.getListenable().addListener(new TreeCacheListener() {
+//                public void childEvent(CuratorFramework var1, TreeCacheEvent var2) {
+//                    if (var2.getType().name().equals("CONNECTION_SUSPENDED") || var2.getType().name().equals("CONNECTION_LOST")) {
+//                        SequenceActionServiceImpl.cf.close();
+//                        ExponentialBackoffRetry var3 = new ExponentialBackoffRetry(5000, 3);
+//                        SequenceActionServiceImpl.cf = CuratorFrameworkFactory.newClient(SequenceActionServiceImpl.this.zkAdress, var3);
+//                        SequenceActionServiceImpl.cf.start();
+//                    }
+//
+//                }
+//            });
+//            treeCache.start();
+//            this.sequenceTimeService.editTime();
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//            throw new SequenceException(e.getMessage());
+//        }
+//    }
 
     public void process(WatchedEvent paramWatchedEvent) {}
 
@@ -172,19 +163,19 @@ public class SequenceActionServiceImpl implements SequenceActionService, Watcher
                 throw new SequenceException(paramCreateSequence.getSeqName() + "序列在数据库中不存在");
             }
             long l = System.currentTimeMillis();
-            String str1 = paramCreateSequence.getSeqName();
-            String str2 = str1 + "_common";
+            String seqName = paramCreateSequence.getSeqName();
+            String seqKey = seqName + "_common";
             boolean bool1 = isSpecialTime("common");
             if (bool1) {
-                str2 = "update_job_lock";
+                seqKey = "update_job_lock";
             }
-            redisLock = new RedisLock(this.stringRedisTemplate, str2, 10, 30, 30);
+            redisLock = new RedisLock(this.stringRedisTemplate, seqKey, 10, 30, 30);
             if (!redisLock.tryLock()) {
                 bool = Boolean.valueOf(false);
                 logger.info("=============获取锁超时时间" + (System.currentTimeMillis() - l));
-                throw new Exception("Redis分布式锁超时,序列号名称为" + str1);
+                throw new Exception("Redis分布式锁超时,序列号名称为" + seqName);
             }
-            logger.info("获取到的redis的key是: " + str2);
+            logger.info("获取到的redis的key是: " + seqKey);
             list = getSequence(paramCreateSequence);
             sequenceTime = this.sequenceTimeService.getTime();           // 序列时间
             if (list.size() > 0) {
@@ -261,23 +252,23 @@ public class SequenceActionServiceImpl implements SequenceActionService, Watcher
         List<PlatformAutoSequence> list = null;
         PlatformAutoSequence platformAutoSequence = null;
         StringBuffer stringBuffer = new StringBuffer();
-        String str = seqName + "_auto";
-        boolean bool1 = isSpecialTime("auto");
+        String autoSeqKey = seqName + "_auto";
+        boolean bool1 = isSpecialTime("auto");          // 在autoSenquence进行清除的时间段内 锁需要对应的清除任务使用的锁 保证数据一致
         if (bool1) {
-            str = "sequence_auto_clear";
+            autoSeqKey = "sequence_auto_clear";
         }
         try {
-            redisLock = new RedisLock(this.stringRedisTemplate, str, 10, 40, 10);
+            redisLock = new RedisLock(this.stringRedisTemplate, autoSeqKey, 10, 40, 10);
             if (!redisLock.tryLock()) {
                 bool = Boolean.valueOf(false);
                 logger.info("=============获取锁超时时间: " + (System.currentTimeMillis() - l1));
                 throw new Exception("Redis分布式锁超时，序列名称为：" + seqName);
             }
-            logger.info("获取到的redis的key是" + str);
+            logger.info("获取到的redis的key是" + autoSeqKey);
             String cacheFlowCodeKey = seqName + tenantNumId + dataSign + "_auto_single";            // {seqName}{tenantNumId}{dataSign}_auto_single         缓存值
-//            if (tenantNumId.longValue() == 0L && dataSign.longValue() == 0L) {
-//                str1 = seqName.trim() + "_auto_com";
-//            }
+            if (tenantNumId.longValue() == 0L && dataSign.longValue() == 0L) {
+                cacheFlowCodeKey = seqName.trim() + "_auto_com";
+            }
             String cacheFlowCodeValue = "";
             String cacheSequenceConfigKey = cacheFlowCodeKey + "_info_key";                         // {seqName}{tenantNumId}{dataSign}_auto_single_info_key  缓存配置
             String cacheSequenceConfigValue = "";
@@ -389,6 +380,7 @@ public class SequenceActionServiceImpl implements SequenceActionService, Watcher
         return integer;
     }
 
+    @Deprecated
     public List<Map<String, Object>> getOfflineSeqInfo(Long subUnitNumId) {
         ArrayList<HashMap<Object, Object>> arrayList = new ArrayList();
         List<PlatformOfflineSequence> list1 = null;
@@ -492,12 +484,12 @@ public class SequenceActionServiceImpl implements SequenceActionService, Watcher
             int i = Integer.parseInt(str1.substring(11, 13));   // 小时数(24时)
             String str2 = str1.substring(14, 16);               // 分钟数
             if (i < 12) {
-                i += 24;    // ?? 个位数小时数的位数不够的原因吗
+                i += 24;
             }
             String str3 = String.valueOf(i) + str2;
             int j = Integer.parseInt(str3);
             if (integer1.intValue() <= j && j <= integer2.intValue()) {
-                bool = Boolean.valueOf(true);                               // 小时分钟数(如： 1801)在2354~2356之间返回true？？？   这三分钟系统在做什么处理吗？
+                bool = Boolean.valueOf(true);                               // 小时分钟数(如： 1801)在2354~2356之间返回true   这三分钟定时任务清除数据 需要获取不同的锁
             }
         } catch (Exception exception) {
             exception.printStackTrace();

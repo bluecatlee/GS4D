@@ -10,17 +10,17 @@ public class PlatformOfflineSequence implements Serializable {
 
     private String seqName;
 
-    private Long onlineStartNum; // B
+    private Long onlineStartNum;
 
-    private Long onlineEndNum; //C
+    private Long onlineEndNum;
 
-    private Long offlineEndNum; //D
+    private Long offlineEndNum;
 
-    private Long offlineCurrentNum; //E
+    private Long offlineCurrentNum;
 
-    private Long offlineGetNumCount; //F
+    private Long offlineGetNumCount;
 
-    private Date createDtme; //G
+    private Date createDtme;
 
     public Long getSeries() {
         return this.series;

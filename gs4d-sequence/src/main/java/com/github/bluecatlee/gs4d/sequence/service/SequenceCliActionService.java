@@ -21,8 +21,9 @@ public class SequenceCliActionService {
     private static MyJsonMapper mapper = MyJsonMapper.nonDefaultMapper();
 
     private static SequenceActionService sequenceActionService;
+
+    public static List<Object> locklists;                            // 提前初始化的锁列表
     public static Map<String, List<CreateSequence>> sequenceObjMap;  // 序列名->序列对象列表的映射
-    public static List<Object> locklists;
     public static Map<String, List<Integer>> seqValueMap;            // 序列名->序列值列表
     public static Map<String, Integer> seqStoreStatusMap;            // 序列名->是否本地存储的映射
 
@@ -345,6 +346,7 @@ public class SequenceCliActionService {
         return seqNum;
     }
 
+    @Deprecated
     public Long getStoreLocalSequence(String systemName, String seqName) {
         Long seqNum = null;
         String maxNum = "";

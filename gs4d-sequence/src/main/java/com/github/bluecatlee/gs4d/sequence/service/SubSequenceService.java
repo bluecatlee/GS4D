@@ -40,24 +40,6 @@ public class SubSequenceService {
         return nosubseq.toString() + subId;
     }
 
-    public String getMemberSequence(String systemName, String SeqName, String subId) throws SequenceException {
-        if (IniteZkConfigService.zk == null) {
-            throw new SequenceException("请先初始化zookeeper");
-        } else if (subId == null) {
-            throw new SequenceException("分库号不能为null");
-        } else {
-            if (subId.toString().length() >= 3) {
-                subId = subId.toString().substring(subId.toString().length() - 3, subId.toString().length());
-            } else {
-                subId = SeqStringUtil.leftPad(subId.toString(), 3, '0');
-            }
-
-            Long nosubseq = this.seq.getNoSubSequence(systemName, SeqName);
-            String newSeq = this.makeSeqFunction(nosubseq, subId);
-            return newSeq;
-        }
-    }
-
     public List<String> getSequenceBatch(String systemName, String seqName, String routeId, Integer size) {
         List<String> serieses = new ArrayList();
 

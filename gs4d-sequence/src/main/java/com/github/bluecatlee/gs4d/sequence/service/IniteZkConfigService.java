@@ -49,10 +49,10 @@ public class IniteZkConfigService implements Watcher {
             SequenceCliActionService.locklists = new ArrayList();
 
             for(int i = 0; i < 50; ++i) {
-                SequenceCliActionService.locklists.add(new Object());
+                SequenceCliActionService.locklists.add(new Object());       // locklists中初始化为50个对象 作为锁
             }
 
-            Stat root2 = zk.exists(currentDayDate, true);
+            Stat root2 = zk.exists(currentDayDate, true);           // exist操作也可以注册监听
             if (root2 == null) {
                 logger.error("没有寻找到节点" + currentDayDate);
                 zk.create(seqNode, " ".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
@@ -73,18 +73,18 @@ public class IniteZkConfigService implements Watcher {
                 updateZkTime = new Timer(true);
                 updateZkTime.schedule(new UpdateZkTimeTask(), 0L, (long) updateTimeSche); // 创建定时器 定时执行任务(定时续命)
 
-            } catch (Exception var6) {
-                logger.error("zk状态监听失败" + var6.getMessage(), var6);
+            } catch (Exception e) {
+                logger.error("zk状态监听失败" + e.getMessage(), e);
             }
 
             this.buildThreadPool();
-        } catch (Exception var7) {
-            throw new SequenceException(var7.getMessage());
+        } catch (Exception e) {
+            throw new SequenceException(e.getMessage());
         }
     }
 
     /**
-     * 处理节点监听事件
+     * 处理节点监听事件 即currentDayDate发生变化时，清空properties文件和本地缓存  todo 需要有个操作定时触发对currentDayDate的修改
      * @param event
      */
     public void process(WatchedEvent event) {
@@ -117,8 +117,8 @@ public class IniteZkConfigService implements Watcher {
             SequenceCliActionService.sequenceObjMap.clear();
             SequenceCliActionService.seqValueMap.clear();
             SequenceCliActionService.seqStoreStatusMap.clear();
-        } catch (Exception var9) {
-            logger.error("zk时间更新出错" + var9.getMessage(), var9);
+        } catch (Exception e) {
+            logger.error("zk时间更新出错" + e.getMessage(), e);
         }
 
     }

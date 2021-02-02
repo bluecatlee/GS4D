@@ -7,9 +7,9 @@ public class AutoSequence implements Serializable {
 
     private Long series;
 
-    private Long tenantNumId;  // h
+    private Long tenantNumId;
 
-    private Long dataSign;  // i
+    private Long dataSign;
 
     private String seqName;
 

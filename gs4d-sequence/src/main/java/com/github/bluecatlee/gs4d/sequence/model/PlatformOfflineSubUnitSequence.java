@@ -10,13 +10,13 @@ public class PlatformOfflineSubUnitSequence implements Serializable {
 
     private String seqName;
 
-    private Long startNum; // H
+    private Long startNum;
 
-    private Long endNum; // I
+    private Long endNum;
 
-    private Long subUnitNumId; //j
+    private Long subUnitNumId;
 
-    private Date createDtme; //G
+    private Date createDtme;
 
     public Long getSeries() {
         return this.series;
