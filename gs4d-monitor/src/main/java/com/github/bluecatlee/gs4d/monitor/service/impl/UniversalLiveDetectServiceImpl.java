@@ -24,16 +24,21 @@ public class UniversalLiveDetectServiceImpl implements UniversalLiveDetectServic
         mapper.getMapper().setPropertyNamingStrategy(PropertyNamingStrategy.LowerCaseStrategy.SNAKE_CASE);
     }
 
+    /**
+     * 基于检查数据库连接的探测
+     * @param request
+     * @return
+     */
     public SystemLiveDetectResponse detectSystemLive(SystemLiveDetectRequest request) {
         if (log.isDebugEnabled()) {
             log.debug("begin detectSystemLive request:{}", mapper.toJson(request));
         }
         SystemLiveDetectResponse response = new SystemLiveDetectResponse();
         try {
-            request.validate("cbaseinfo", ExceptionType.VCE10007);
+            request.validate(request.getSubSystem(), ExceptionType.VCE10007);
             if (!"none".equals(UniversalLiveDetectUtil.dbType)) {
                 if (UniversalLiveDetectUtil.jdbcTemplate == null) {
-                    throw new ValidateBusinessException("cbaseinfo", ExceptionType.VBE20007, "当前业务项目没有初始化JDBC,无法探测系统:" + request.getSubSystem() + "是否存活!");
+                    throw new ValidateBusinessException(request.getSubSystem(), ExceptionType.VBE20007, "当前业务项目没有初始化JDBC,无法探测系统:" + request.getSubSystem() + "是否存活!");
                 }
                 String sql;
                 if ("oracle".equals(UniversalLiveDetectUtil.dbType)) {
@@ -41,7 +46,7 @@ public class UniversalLiveDetectServiceImpl implements UniversalLiveDetectServic
                 } else if ("mysql".equals(UniversalLiveDetectUtil.dbType)) {
                     sql = "select 'abc' ";
                 } else {
-                    throw new ValidateBusinessException("cbaseinfo", ExceptionType.VBE20007, "不支持数据库类别:" + UniversalLiveDetectUtil.dbType + ",无法探测系统:" + request.getSubSystem() + "是否存活!");
+                    throw new ValidateBusinessException(request.getSubSystem(), ExceptionType.VBE20007, "不支持数据库类别:" + UniversalLiveDetectUtil.dbType + ",无法探测系统:" + request.getSubSystem() + "是否存活!");
                 }
                 String str = (String)UniversalLiveDetectUtil.jdbcTemplate.queryForObject(sql, String.class);
                 if (StringUtil.isAllNullOrBlank(new String[] {str})) {
@@ -52,8 +57,9 @@ public class UniversalLiveDetectServiceImpl implements UniversalLiveDetectServic
         } catch (Exception e) {
             ExceptionUtil.processException(e, (MessagePack)response);
         }
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("end detectSystemLive response:{}", response.toLowerCaseJson());
+        }
         return response;
     }
 }

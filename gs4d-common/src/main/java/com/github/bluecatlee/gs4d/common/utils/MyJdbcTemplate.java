@@ -31,7 +31,7 @@ public class MyJdbcTemplate extends JdbcTemplate {
     public <T> T queryForObject(String sql, Object[] args, RowMapper<T> rowMapper) throws DataAccessException {
         sql = this.replaceSql(sql);
         List<T> results = (List)super.query(sql, args, new RowMapperResultSetExtractor(rowMapper, 1));
-        return IDataAccessUtils.requiredSingleResult(results);
+        return IDataAccessUtil.requiredSingleResult(results);
     }
 
     public <T> List<T> queryForList(String sql, Object[] args, Class<T> elementType) throws DataAccessException {

@@ -4,6 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public interface CacheCommonService {
 
-    JdbcTemplate getJdbcTemplate(String var1);
+    JdbcTemplate getJdbcTemplate(String dataSourceType);
 
 }

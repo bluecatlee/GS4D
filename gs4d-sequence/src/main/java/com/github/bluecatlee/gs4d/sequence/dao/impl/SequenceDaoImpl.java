@@ -44,8 +44,7 @@ public class SequenceDaoImpl implements SequenceDao {
 
     public void updateSeqValnumAndSeqnum(CreateSequence paramCreateSequence) {
         String str = this.mycatGoMaster + "update PLATFORM_SEQUENCE set CURRENT_NUM = ?,SEQ_NUM = ? where SEQ_NAME = ?";
-        this.jdbcTemplate.update(str, new Object[] { paramCreateSequence.getCurrentNum(), paramCreateSequence.getSeqNum(), paramCreateSequence
-                .getSeqName() });
+        this.jdbcTemplate.update(str, new Object[] { paramCreateSequence.getCurrentNum(), paramCreateSequence.getSeqNum(), paramCreateSequence.getSeqName() });
     }
 
     public List<CreateSequence> getSequence(CreateSequence paramCreateSequence) {
@@ -76,8 +75,9 @@ public class SequenceDaoImpl implements SequenceDao {
     public void updateCurrentVal(Long paramLong, String paramString) {
         String str = this.mycatGoMaster + "UPDATE PLATFORM_SEQUENCE SET SEQ_NUM_END=? where SEQ_NAME=?";
         int i = this.jdbcTemplate.update(str, new Object[] { paramLong, paramString });
-        if (i < 1)
+        if (i < 1) {
             throw new RuntimeException("更新失败");
+        }
     }
 
     public Integer getSeqStoreStatus(String paramString) throws Exception {

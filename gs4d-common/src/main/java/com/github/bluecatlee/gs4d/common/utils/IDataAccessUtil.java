@@ -3,9 +3,9 @@ package com.github.bluecatlee.gs4d.common.utils;
 import java.util.Collection;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-class IDataAccessUtils {
+class IDataAccessUtil {
 
-    IDataAccessUtils() {
+    IDataAccessUtil() {
     }
 
     public static <T> T requiredSingleResult(Collection<T> results) throws IncorrectResultSizeDataAccessException {

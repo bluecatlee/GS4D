@@ -49,7 +49,7 @@ public class UniversalLiveDetectUtil {
         dbType = dbTypeParam;
         UniversalLiveDetectServiceImpl universalLiveDetectService = new UniversalLiveDetectServiceImpl();
         ApplicationConfig application = new ApplicationConfig();
-        application.setName("omp_b2c_" + subSystem.substring(1));
+        application.setName(subSystem.substring(1));
         List<RegistryConfig> config = new ArrayList<>();
         String[] zkAdd = zkAddress.split(",");
         for (int i = 0; i < zkAdd.length; i++) {

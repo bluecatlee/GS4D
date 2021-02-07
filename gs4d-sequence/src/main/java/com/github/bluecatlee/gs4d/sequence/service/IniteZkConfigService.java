@@ -84,7 +84,7 @@ public class IniteZkConfigService implements Watcher {
     }
 
     /**
-     * 处理节点监听事件 即currentDayDate发生变化时，清空properties文件和本地缓存  todo 需要有个操作定时触发对currentDayDate的修改
+     * 处理节点监听事件 即currentDayDate发生变化时，清空properties文件和本地缓存  【有对currentDayDate的修改的定时任务】
      * @param event
      */
     public void process(WatchedEvent event) {

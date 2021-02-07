@@ -14,10 +14,10 @@ public class CacheCommonServiceImpl implements CacheCommonService {
     @Resource(name = "dataSource")
     DynamicDataSource dataSource;
 
-    public JdbcTemplate getJdbcTemplate(String var1) {
-        DataSourceContextHolder.setDataSourceType(var1);
-        JdbcTemplate var2 = new JdbcTemplate(this.dataSource);
-        return var2;
+    public JdbcTemplate getJdbcTemplate(String dataSourceType) {
+        DataSourceContextHolder.setDataSourceType(dataSourceType);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
+        return jdbcTemplate;
     }
 
 }
