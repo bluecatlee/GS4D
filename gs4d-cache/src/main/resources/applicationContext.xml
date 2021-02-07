@@ -19,7 +19,7 @@
 
     <import resource="application_datasource.xml" />
     <import resource="application_jdbc.xml" />
-<!--    <import resource="application_transaction.xml" />-->
+    <import resource="application_transaction.xml" />
     <import resource="application_redis.xml" />
 <!--    <import resource="application_dubbo.xml" />-->
 

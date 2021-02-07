@@ -63,7 +63,7 @@ public class CacheRefreshServiceImpl implements CacheRefreshService {
     @Resource
     private CacheStoreService ecCacheStoreService;
 
-    @Resource(name = "transactionManager")
+    @Resource(name = "commonTransactionManager")
     private PlatformTransactionManager transactionManager;
 
     @Resource

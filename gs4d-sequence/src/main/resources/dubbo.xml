@@ -6,7 +6,7 @@
                            http://code.alibabatech.com/schema/dubbo
                            http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 
-    <dubbo:application name="sequenceService-provider"/>
+    <dubbo:application name="gs4d_sequenceService-provider"/>
     <!-- 使用zookeeper注册中心暴露服务地址 -->
     <dubbo:registry protocol="zookeeper" address="${zk.sequence.host.port}"/>
 
