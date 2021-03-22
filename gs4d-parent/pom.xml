@@ -11,6 +11,8 @@
         <module>../gs4d-monitor-api</module>
         <module>../gs4d-sequence</module>
         <module>../gs4d-common</module>
+        <module>../gs4d-pay</module>
+        <module>../gs4d-pay-api</module>
     </modules>
     <packaging>pom</packaging>
 
