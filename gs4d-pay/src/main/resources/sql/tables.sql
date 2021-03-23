@@ -62,3 +62,40 @@ CREATE TABLE `pay_param_log` (
   `pay_app_key` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`series`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+##支付类型表
+CREATE TABLE `ex_arc_pay_type` (
+  `series` bigint(20) NOT NULL DEFAULT '0',
+  `tenant_num_id` int(11) NOT NULL DEFAULT '0' COMMENT '租户ID',
+  `pay_type_id` int(11) NOT NULL DEFAULT '0' COMMENT '付款方式ID',
+  `pay_type_name` varchar(60) DEFAULT ' ' COMMENT '付款方式名称',
+  `aotosign` tinyint(4) DEFAULT '1' COMMENT '0跟第三方交互（支付宝微支付等），1直接完成（现金等），2不跟第三方交互但是要交易中（银联刷卡等）',
+  `create_dtme` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `last_updtme` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '最后更新时间',
+  `create_user_id` bigint(20) DEFAULT '1' COMMENT '用户',
+  `last_update_user_id` bigint(20) DEFAULT '1' COMMENT '更新用户',
+  `cancelsign` char(1) DEFAULT 'N' COMMENT '删除',
+  `insertdata` char(1) DEFAULT 'Y' COMMENT '新增',
+  `updatedata` char(1) DEFAULT 'N' COMMENT '更新',
+  `backsign` tinyint(4) DEFAULT '0' COMMENT '标识付款方式在退货时，是否支持参与退现金金额的计算，1为参与，0为不参与',
+  `ec_type_id` varchar(10) DEFAULT ' ' COMMENT '跨境购电商付款方式',
+  `withdrawals_sign` tinyint(4) DEFAULT '0' COMMENT '是否支持提现',
+  `is_real` tinyint(2) DEFAULT '0' COMMENT '是否真实付款，0否，1是',
+  `data_sign` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0: 正式  1：测试',
+  `fi_share_sign` tinyint(4) DEFAULT '0' COMMENT '财务开票价标志，0不参与，1参与',
+  `cust_share_sign` tinyint(4) DEFAULT '0' COMMENT '消费者开票价标志，0不参与，1参与',
+  `orn_num_id` int(1) DEFAULT '-1' COMMENT '-1时为所有渠道，积分支付时，对应的渠道，0表示GB积分支付的渠道，11表示MC积分支付的渠道',
+  `interface_sign` int(1) DEFAULT '0' COMMENT '界面交互标识，0无交互，1输入交易流水，2积分交互,3刷卡机跟机器交互 ',
+  `repeat_sign` int(1) DEFAULT '0' COMMENT '销售时是否允许多次付款，0否，1是',
+  `payment_channel` int(11) DEFAULT NULL,
+  `frozen` varchar(10) DEFAULT NULL COMMENT '是否禁用',
+  `is_third_invoice` char(255) DEFAULT '0' COMMENT '0：非第三方开票，1： 是第三方开票',
+  `limit_num` int(4) DEFAULT '0' COMMENT '限制次数',
+  `installment_type` tinyint(4) DEFAULT '0' COMMENT '支付方式是否可分期 1是，0否',
+  `pay_type_logo` varchar(100) DEFAULT ' ' COMMENT '支付方式图标',
+  `open_return_type` tinyint(4) DEFAULT '1' COMMENT '是否支持退货： 1是，0否',
+  `return_type` tinyint(4) DEFAULT '1' COMMENT '退货类型： 1 部分退货(包含整单退)，2 整单退货',
+  `installment_line` decimal(18,2) DEFAULT '0.00' COMMENT '最低分期满额度',
+  PRIMARY KEY (`tenant_num_id`,`pay_type_id`,`data_sign`,`series`),
+  KEY `ux_ex_arc_pay_type` (`series`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -22,8 +22,6 @@ dubbo:
 config:
   paymentTypes:
     0: testPaymentImpl
-    1: PrepaidPay
-    2: test
 
 restTemplateConnectTimeout: 60000
 restTemplateReadTimeout: 60000

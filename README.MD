@@ -43,3 +43,9 @@ GS4D
         
 &emsp;缓存的通用查询功能：<br/>
 &emsp;&emsp;参考：[gs4d-cache](https://github.com/bluecatlee/GS4D/blob/main/gs4d-cache)<br/>
+
+&emsp;支付中台及支付系统的设计：<br/>
+&emsp;&emsp;参考：[gs4d-pay](https://github.com/bluecatlee/GS4D/blob/main/gs4d-pay)<br/>
+
+&emsp;促销系统的设计：<br/>
+&emsp;&emsp;参考：[Promot](https://github.com/bluecatlee/Promot)<br/>
