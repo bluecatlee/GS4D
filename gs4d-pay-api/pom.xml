@@ -21,4 +21,17 @@
 
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub BluecatLee Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/BluecatLee/GS4D</url>
+        </repository>
+    </distributionManagement>
+
+    <!--
+        usage:
+         mvn deploy -Dregistry=https://maven.pkg.github.com/bluecatlee -Dtoken=
+     -->
+
 </project>
